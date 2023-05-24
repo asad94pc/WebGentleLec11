@@ -8,3 +8,24 @@
 .jumbotron{
     background: none;
 }
+
+.sticky {
+    position: -webkit-sticky;
+    position: sticky;
+    top: 0;
+    width: 100%;
+    /*z-index: 2;*/
+}
+
+.card {
+    z-index: 1;
+    /*position:absolute;*/
+}
+
+.footer {
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    white-space: nowrap;
+    line-height: 60px;
+}

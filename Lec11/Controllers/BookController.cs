@@ -20,9 +20,10 @@ namespace Lec11.Controllers
             return View(data);
         }
 
-        public BookModel GetBook(int id)
+        public ViewResult GetBook(int id)
         {
-            return _book.GetById(id);
+            var book = _book.GetById(id);
+            return View(book);
         }
 
        

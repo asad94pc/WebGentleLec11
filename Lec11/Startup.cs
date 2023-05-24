@@ -51,7 +51,9 @@ namespace Lec11
             app.UseRouting();
 
             app.UseAuthorization();
-            
+
+            //app.MapRazorPages();
+
 
             app.UseEndpoints(endpoints =>
             {
