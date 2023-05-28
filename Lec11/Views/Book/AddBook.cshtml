@@ -1,0 +1,105 @@
+﻿@model BookModel
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+@inject Lec11.Repository.ILanguageRepository _langRepository
+
+
+<h2>Welcome to "Add New Book Form"</h2>
+<div class="container">
+</div>
+
+@if (ViewBag.BookAdded == true)
+{
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+        <strong>Success</strong> Book has been added in the database.
+        Click<a asp-action="GetBook" asp-controller="Book" asp-route-id=@ViewBag.BookId>Here</a>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+}
+<h4>Input the Book Data</h4>
+
+<form method="post" enctype="multipart/form-data" asp-action="AddBook" asp-controller="Book">
+
+    <div asp-validation-summary="All" class="text-danger"></div>
+
+    <div class="form-group">
+        <label asp-for="Title"></label>
+        <input asp-for="Title" class="form-control" placeholder="Title of Book" />
+        <span asp-validation-for="Title" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="Author"></label>
+        <input asp-for="Author" class="form-control">
+        <span asp-validation-for="Author" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="Category"></label>
+        <input asp-for="Category" class="form-control">
+    </div>
+
+    <div class="form-group">
+        <label asp-for="Pages"></label>
+        <input asp-for="Pages" class="form-control">
+        <span asp-validation-for="Pages" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="CreatedOn"></label>
+        <input asp-for="CreatedOn" class="form-control">
+    </div>
+
+    <div class="form-group">
+        <label asp-for="LanguageId"></label>
+        <select asp-for="LanguageId" class="form-control" 
+        asp-items="@(await _langRepository.GetAllLanguages()).Select(x => new SelectListItem(){Text = x.Name, Value = x.Id.ToString()})">
+        </select>
+        <span asp-validation-for="LanguageId" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="Description"></label>
+        <textarea asp-for="Description" class="form-control"></textarea>
+        <span asp-validation-for="Description" class="text-danger"></span>
+    </div>
+
+
+    <div class="form-group">
+        <label asp-for="BookPdf"></label>
+        <div class="mb-3">
+            <input class="form-control" asp-for="BookPdf" id="formFile">
+        </div>
+        <span asp-validation-for="BookPdf" class="text-danger"></span>
+    </div>
+
+
+    <div class="form-group">
+        <label asp-for="CoverPhoto"></label>
+        <div class="mb-3">
+            <input class="form-control" asp-for="CoverPhoto" id="formFile">
+        </div>
+        <span asp-validation-for="CoverPhoto" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="GallaryFiles"></label>
+        <div class="mb-3">
+            <input class="form-control" asp-for="GallaryFiles" id="formFile">
+        </div>
+        <span asp-validation-for="GallaryFiles" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <input type="submit" class="btn btn-primary form-control" value="Add Book" />
+    </div>
+
+</form>
+
+
+@*@section scripts{
+<script>
+        function myComplete(){
+            alert("form is complete");
+        }
+</script>
+}*@

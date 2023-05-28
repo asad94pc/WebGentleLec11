@@ -1,0 +1,16 @@
+﻿@model Lec11.Models.BookModel
+
+<div class="card mb-4 shadow-sm">
+    <img src="@(string.IsNullOrEmpty(Model.CoverImageUrl) ? "/img/no-image.png" : Model.CoverImageUrl )" class="img-thumbnail">
+    <div class="card-body">
+        <p class="card-text">@(string.IsNullOrEmpty(Model.Title) ? "Book Title: Not Found" : $"Book Title: {Model.Title}")</p>
+        <p class="card-text">
+            @(string.IsNullOrEmpty(Model.Description) ? "Book Description: Not found" : $"Book Description: {Model.Description}")</p>
+        <div class="d-flex justify-content-between align-items-center">
+            <a asp-controller="Book" asp-action="GetBook" asp-route-id="@Model.Id" class="btn btn-primary btn-outline-warning">View Details</a>
+            @*<a asp-controller="Book" asp-action="GetBook" asp-route-id="@Model.Id" href="/book/GetBook/@Model.Id" class="btn btn-primary btn-outline-warning">View Details</a>*@
+            <small class="text-muted">Author: @(string.IsNullOrEmpty(Model.Author) ? "Not found" : Model.Author)</small>
+        </div>
+    </div>
+</div>
+

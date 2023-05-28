@@ -1,33 +1,125 @@
-﻿using Lec11.Models;
+﻿using Lec11.Data;
+using Lec11.Models;
+using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace Lec11.Repository
 {
-    public class BookRepository
+    public class BookRepository : IBookRepository
     {
-        public List<BookModel> GetAllBooks()
+        private readonly BookDbContext _dbContext = null;
+
+        public BookRepository(BookDbContext context)
         {
-            return DataSource();
-            
-        }
-        public BookModel GetById(int id)
-        {
-            return DataSource().Where(x => x.Id == id).FirstOrDefault();
-            
+            _dbContext = context;
         }
 
-        private List<BookModel> DataSource()
+        public async Task<int> AddNewBook(BookModel book)
         {
-            return new List<BookModel>()
+            var newBook = new Book()
             {
-                new BookModel() {Id = 1, Author = "asad",  Title = "Java",       Category = "Programing",                 Language = "Pashto" ,     Pages = 421,  Description ="This is a java book."},
-                new BookModel() {Id = 2, Author = "ahmad", Title = "NET",        Category = "Backend",                    Language = "Sanskrit" ,   Pages = 259,  Description ="This is a Dot NET book."},
-                new BookModel() {Id = 3, Author = "ali",   Title = "CSS",        Category = "Front End",                  Language="Urdu",          Pages = 321,  Description ="This is a CSS book."},
-                new BookModel() {Id = 4, Author = "abdul", Title = "HTML",       Category = "Hyper Text Markup Language", Language = "English",     Pages = 102,  Description ="This is an HTML book."},
-                new BookModel() {Id = 5, Author = "asad",  Title = "Java",       Category = "Client Side Script",         Language= "German",       Pages = 118,  Description ="This is a java book."},
-                new BookModel() {Id = 6, Author = "Anwar", Title = "BootStrap",  Category = "Designing",                  Language = "Hindi",       Pages = 125,  Description ="This is a  Bootstrap book."}
+                Title = book.Title,
+                Description = book.Description,
+                Pages = book.Pages,
+                CoverImageUrl = book.CoverImageUrl,
+                LanguageId = book.LanguageId,
+                CreatedOn = book.CreatedOn,
+                Category = book.Category,
+                Author = book.Author,
+                BookPdfUrl = book.BookPdfUrl,
             };
+            newBook.BooksGallary = new List<BookGallary>();
+            foreach (var file in book.Gallary)
+            {
+                newBook.BooksGallary.Add(new BookGallary()
+                {
+                    Name = file.Name,
+                    Url = file.Url,
+                });
+            }
+            await _dbContext.Books.AddAsync(newBook);
+            await _dbContext.SaveChangesAsync();
+
+            return newBook.Id;
         }
+        public async Task<List<BookModel>> GetAllBooks()
+        {
+            var bookList = new List<BookModel>();
+
+            var books = await _dbContext.Books.ToListAsync();
+
+            if (books.Any())
+            {
+                foreach (var book in books)
+                {
+                    var bookModel = new BookModel()
+                    {
+                        Title = book.Title,
+                        Id = book.Id,
+                        CreatedOn = book.CreatedOn,
+                        Category = book.Category,
+                        Author = book.Author,
+                        LanguageId = book.LanguageId,
+                        Description = book.Description,
+                        Pages = book.Pages,
+                        CoverImageUrl = book.CoverImageUrl,
+                        BookPdfUrl = book.BookPdfUrl,
+                    };
+                    bookList.Add(bookModel);
+                }
+            }
+            return bookList;
+        }
+
+        public async Task<List<BookModel>> GetTopBooks(int count)
+        {
+            var bookList = await _dbContext.Books.Select(book => new BookModel()
+            {
+                Title = book.Title,
+                Id = book.Id,
+                CreatedOn = book.CreatedOn,
+                Category = book.Category,
+                Author = book.Author,
+                LanguageId = book.LanguageId,
+                Description = book.Description,
+                Pages = book.Pages,
+                CoverImageUrl = book.CoverImageUrl,
+                BookPdfUrl = book.BookPdfUrl,
+
+            }).Take(count).ToListAsync();
+
+            return bookList;
+        }
+
+
+        public async Task<BookModel> GetById(int id)
+        {
+            return await _dbContext.Books.Where(x => x.Id == id)
+                .Select(book => new BookModel()
+                {
+                    Id = book.Id,
+                    Author = book.Author,
+                    Title = book.Title,
+                    Description = book.Description,
+                    Language = book.Language.Name,
+                    Pages = book.Pages,
+                    CreatedOn = book.CreatedOn,
+                    Category = book.Category,
+                    CoverImageUrl = book.CoverImageUrl,
+                    Gallary = book.BooksGallary.Select(g => new GallaryModel()
+                    {
+                        Id = g.Id,
+                        Name = g.Name,
+                        Url = g.Url
+                    }).ToList(),
+                    BookPdfUrl = book.BookPdfUrl,
+
+                }).FirstOrDefaultAsync();
+
+        }
+
+
     }
 }

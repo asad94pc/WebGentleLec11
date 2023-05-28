@@ -1,11 +1,41 @@
-﻿
+﻿@{
+
+    //var bookInfo = ViewData["book"] as BookModel;
+    //var bookInfo = (BookModel)ViewData["book"];
+    //dynamic dataObj = ViewBag.Data;
+}
+@*@{
+    var book = viewdata["book"] as bookmodel;
+}*@
+@inject Lec11.Repository.IBookRepository _bookRepository
+
 <link href="~/css/stylesheet.css" rel="stylesheet" />
+
+@*<h2>Value of ViewDataAttribute = @ViewData["CustomProperty"]</h2>
+
+<h3 class="text-warning">
+    View Data ID: @book.Id
+    View Data Title: @book.Title
+</h3>*@
 
 
 
 <section class="jumbotron text-center">
     <div class="container">
         <h2>Welcome to Book Store</h2>
+
+        <big>THIS IS GOING TO CHANGE</big>
+        <p big>THIS IS ALSO GOING TO CHANGE</p>
+
+        <environment names="Development">
+            <h2 class="text-warning">Development Environment </h2>
+        </environment>
+
+        <environment names="Production">
+            <h2 class="text-warning">Production Environment </h2>
+        </environment>
+
+
         <p class="lead text-muted">
             This is some text about our book store.
             This is some text about our book store.
@@ -15,6 +45,12 @@
         <p>
             <a href="#" class="btn btn-primary">Search Books</a>
         </p>
+        @*<select>
+            @foreach (var item in await _bookRepository.GetAllBooks())
+            {
+                <option>@item.Title</option>
+            }
+        </select>*@
 
     </div>
 </section>
@@ -22,50 +58,18 @@
     <div class="container">
         <h2>Featured Books</h2>
         <div class="row">
-            <div class="col-md-4">
-                <div class="card mb-4 shadow-sm">
-                    <svg class="bd-placeholder-img card-img-top" width="100%" height="225" xmlns="http://www.w3.org/2000/svg"></svg>
-                    <div class="card-body">
-                        <p class="card-text">Short description of the book</p>
-                        <div class="d-flex justify-content-between align-items-center">
-                            <a href="#" class="btn btn-primary btn-outline-warning">View Details</a>
-                            <small class="text-muted">Author Name</small>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-4">
-                <div class="card mb-4 shadow-sm">
-                    <svg class="bd-placeholder-img card-img-top" width="100%" height="225" xmlns="http://www.w3.org/2000/svg"></svg>
-                    <div class="card-body">
-                        <p class="card-text">Short description of the book</p>
-                        <div class="d-flex justify-content-between align-items-center">
-                            <a href="#" class="btn btn-primary btn-outline-warning">View Details</a>
-                            <small class="text-muted">Author Name</small>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-4">
-                <div class="card mb-4 shadow-sm">
-                    <svg class="bd-placeholder-img card-img-top" width="100%" height="225" xmlns="http://www.w3.org/2000/svg"></svg>
-                    <div class="card-body">
-                        <p class="card-text">Short description of the book</p>
-                        <div class="d-flex justify-content-between align-items-center">
-                            <a href="#" class="btn btn-primary btn-outline-warning">View Details</a>
-                            <small class="text-muted">Author Name</small>
-                        </div>
-                    </div>
-                </div>
-            </div>
+
+            <vc:top-books count="3"></vc:top-books>
+
         </div>
     </div>
+
 </div>
+
+
 
 @section MyJsSection {
     <script>
-        $(document).ready(function () {
-            //alert("Document is Ready!");
-        })
+        //code
     </script>
 }

@@ -1,10 +1,10 @@
-﻿@using Lec11.Models;
-@model BookModel
+﻿@model BookModel
 
 
 <div class="container">
 
     <div class="row">
+
         <div class="col-md-6">
 
             <div id="carouselExampleIndicators" class="carousel slide">
@@ -14,15 +14,14 @@
                     <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="2" aria-label="Slide 3"></button>
                 </div>
                 <div class="carousel-inner">
-                    <div class="carousel-item active">
-                        <img src="~/img/book/book1.jfif" class="d-block w-100" alt="BookImg1">
-                    </div>
-                    <div class="carousel-item">
-                        <img src="~/img/book/book2.jfif" class="d-block w-100" alt="BookImg2">
-                    </div>
-                    <div class="carousel-item">
-                        <img src="~/img/book/Book3.jpeg" class="d-block w-100" alt="BookImg3">
-                    </div>
+                    @for (int i = 0; i < Model.Gallary.Count(); i++)
+                    {
+                        <div class="@(i==0? "carousel-item active" : "carousel-item")">
+                            <img src="@Model.Gallary[i].Url" asp-append-version="true" class="d-block w-100" alt="BookImg1">
+                        </div>
+
+                    }
+
                 </div>
                 <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide="prev">
                     <span class="carousel-control-prev-icon" aria-hidden="true"></span>
@@ -33,6 +32,7 @@
                     <span class="visually-hidden">Next</span>
                 </button>
             </div>
+        
         </div>
 
         <div class="col-md-6">
@@ -56,7 +56,7 @@
             </div>
             <div class="row">
                 <div clss="col-md-4">
-                    <button class="btn btn-primary btn-outline-success">Read Now</button>
+                    <a href="@Model.BookPdfUrl" target="_blank" class="btn btn-primary btn-outline-success">Read Now</a>
                 </div>
             </div>
             <hr />
@@ -70,28 +70,10 @@
 
 
     </div>
+
     <div class="p-5 mt-2 bg-light">
-        <h3 class="text-info">Similar Books</h3>
-        <div class="row">
-
-            @for (int i = 0; i < 3; i++)
-            {
-                <div class="col-md-4">
-                    <div class="card mb-4 shadow-sm">
-                        <svg class="bd-placeholder-img card-img-top" width="100%" height="225" xmlns="http://www.w3.org/2000/svg"></svg>
-                        <div class="card-body">
-                            <p class="card-text">@Model.Title</p>
-                            <p class="card-text">@Model.Description</p>
-                            <div class="d-flex justify-content-between align-items-center">
-                                <a href="/book/GetBook/@Model.Id" class="btn btn-primary btn-outline-warning">View Details</a>
-                                <small class="text-muted">Author: @Model.Author</small>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-            }
-        </div>
+        
+        <vc:top-books></vc:top-books>
     </div>
 
 

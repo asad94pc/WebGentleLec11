@@ -1,6 +1,10 @@
+using Lec11.Data;
+using Lec11.Models;
+using Lec11.Repository;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.FileProviders;
@@ -10,14 +14,16 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using static System.Net.WebRequestMethods;
 
 namespace Lec11
 {
     public class Startup
     {
-        public Startup(IConfiguration configuration)
+        IConfiguration _config;
+        public Startup(IConfiguration config)
         {
-            Configuration = configuration;
+            _config = config;
         }
 
         public IConfiguration Configuration { get; }
@@ -26,9 +32,20 @@ namespace Lec11
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllersWithViews();
+            services.AddDbContext<BookDbContext>(options => options.UseSqlServer(_config.GetConnectionString("DefaultConnection")));
+
 #if DEBUG
             services.AddRazorPages().AddRazorRuntimeCompilation();
+              //uncomment the below code to disable client side validations  
+            //.AddViewOptions(options =>
+            //{
+            //    options.HtmlHelperOptions.ClientValidationEnabled = false;
+            //});
 #endif
+            services.AddScoped<IBookRepository, BookRepository>();
+
+            services.AddScoped<ILanguageRepository, LanguageRepository>();
+            services.Configure<BookAlertConfigModel>(_config.GetSection("MyNewBook"));
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -57,7 +74,12 @@ namespace Lec11
 
             app.UseEndpoints(endpoints =>
             {
-                endpoints.MapDefaultControllerRoute();
+                endpoints.MapControllers();
+                
+                //endpoints.MapDefaultControllerRoute();
+                //endpoints.MapControllerRoute(
+                //    name: "default",
+                //    pattern: "bookApp/{controller=Home}/{action=Index}/{id?}");
             });
         }
     }
