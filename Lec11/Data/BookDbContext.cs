@@ -1,8 +1,10 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Lec11.Models;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 
 namespace Lec11.Data
 {
-    public class BookDbContext : DbContext
+    public class BookDbContext : IdentityDbContext<ApplicationUser>
     {
         public BookDbContext(DbContextOptions<BookDbContext> options) : base(options)
         {

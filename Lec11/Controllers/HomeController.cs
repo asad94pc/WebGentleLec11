@@ -1,4 +1,5 @@
 ﻿using Lec11.Models;
+using Lec11.Repository;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
@@ -10,10 +11,13 @@ namespace Lec11.Controllers
     public class HomeController : Controller
     {
         private readonly BookAlertConfigModel _configuration;
-
-        public HomeController(IOptions<BookAlertConfigModel> configuration)
+        private readonly BookAlertConfigModel _configurationThirdBook;
+        private readonly IMessageRepository _messageRepository;
+        public HomeController(IOptionsSnapshot<BookAlertConfigModel> configuration, IMessageRepository messageRepository)
         {
-            _configuration = configuration.Value;
+            _configuration = configuration.Get("MyBook1");
+            _configurationThirdBook = configuration.Get("MyBook2");
+            _messageRepository = messageRepository;
         }
 
         [ViewData]
@@ -23,9 +27,12 @@ namespace Lec11.Controllers
         [Route("~/")]
         public ViewResult Index()
         {
-
             bool isTrue = _configuration.NewBookRelease;
             string bookName = _configuration.NewBookName;
+
+            bool isTrue2 = _configurationThirdBook.NewBookRelease;
+            string bookName2 = _configurationThirdBook.NewBookName;
+            var value = _messageRepository.GetName();
 
 
             //var bookBindModel = new BookAlertConfigModel();

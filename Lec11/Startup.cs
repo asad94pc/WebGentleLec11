@@ -4,6 +4,7 @@ using Lec11.Repository;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -32,7 +33,23 @@ namespace Lec11
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllersWithViews();
+            
             services.AddDbContext<BookDbContext>(options => options.UseSqlServer(_config.GetConnectionString("DefaultConnection")));
+            
+            services.AddIdentity<ApplicationUser, IdentityRole>()
+                .AddEntityFrameworkStores<BookDbContext>();
+
+            services.Configure<IdentityOptions>(options =>
+            {
+                options.Password.RequiredLength = 5;
+                options.Password.RequireUppercase = false;
+                options.Password.RequireLowercase = false;
+                options.Password.RequireNonAlphanumeric = false;
+                options.Password.RequiredUniqueChars = 1;
+                options.Password.RequireDigit = false;
+
+            });
+
 
 #if DEBUG
             services.AddRazorPages().AddRazorRuntimeCompilation();
@@ -42,10 +59,13 @@ namespace Lec11
             //    options.HtmlHelperOptions.ClientValidationEnabled = false;
             //});
 #endif
+            services.AddScoped<IAccountRepository, AccountRepository>();
             services.AddScoped<IBookRepository, BookRepository>();
-
             services.AddScoped<ILanguageRepository, LanguageRepository>();
-            services.Configure<BookAlertConfigModel>(_config.GetSection("MyNewBook"));
+            services.AddSingleton<IMessageRepository, MessageRepository>();
+            
+            services.Configure<BookAlertConfigModel>("MyBook1", _config.GetSection("MyNewBook"));
+            services.Configure<BookAlertConfigModel>("MyBook2", _config.GetSection("ThridBook"));
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -66,8 +86,12 @@ namespace Lec11
             app.UseStaticFiles();
 
             app.UseRouting();
-
+            
+            app.UseAuthentication();
+            
             app.UseAuthorization();
+
+
 
             //app.MapRazorPages();
 
