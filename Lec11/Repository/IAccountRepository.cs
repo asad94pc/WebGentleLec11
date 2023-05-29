@@ -8,5 +8,6 @@ namespace Lec11.Repository
     {
         Task<IdentityResult> RegisterUser(SignUpUserModel model);
         Task<SignInResult> LoginUser(SigninModel model);
+        Task LogoutUser();
     }
 }

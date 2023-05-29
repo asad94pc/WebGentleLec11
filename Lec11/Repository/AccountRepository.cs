@@ -36,5 +36,10 @@ namespace Lec11.Repository
             var result = await _signInManager.PasswordSignInAsync(model.Email, model.Pasword, model.RememberMe, false);
             return result;
         }
+
+        public async Task LogoutUser()
+        {
+            await _signInManager.SignOutAsync();
+        }
     }
 }

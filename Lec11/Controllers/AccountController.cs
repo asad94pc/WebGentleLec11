@@ -57,10 +57,16 @@ namespace Lec11.Controllers
             if (result.Succeeded)
             {
                 return RedirectToAction("Index", "Home");
-                
+
             }
             ModelState.AddModelError("", "invalid credentials");
             return View(model);
+        }
+        [Route("Logout")]
+        public async Task<IActionResult> Logout()
+        {
+            await _accountRepository.LogoutUser();
+            return RedirectToAction("Index", "Home");
         }
 
 
