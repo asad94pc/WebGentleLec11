@@ -1,0 +1,15 @@
+[
+  {
+    "outputFileName": "wwwroot/css/Site.min.css",
+    "inputFiles": [
+      "wwwroot/css/DummyStyleSheet.css",
+      "wwwroot/css/Site.css",
+      "wwwroot/css/StyleSheet.css"
+    ],
+    "minify": {
+      "enabled": true,
+      "renameLocals": true
+    }
+
+  }
+]

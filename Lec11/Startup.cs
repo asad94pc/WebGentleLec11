@@ -1,6 +1,8 @@
 using Lec11.Data;
+using Lec11.Helpers;
 using Lec11.Models;
 using Lec11.Repository;
+using Lec11.Service;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
@@ -37,7 +39,7 @@ namespace Lec11
             services.AddDbContext<BookDbContext>(options => options.UseSqlServer(_config.GetConnectionString("DefaultConnection")));
             
             services.AddIdentity<ApplicationUser, IdentityRole>()
-                .AddEntityFrameworkStores<BookDbContext>();
+                .AddEntityFrameworkStores<BookDbContext>().AddDefaultTokenProviders();
 
             services.Configure<IdentityOptions>(options =>
             {
@@ -47,9 +49,23 @@ namespace Lec11
                 options.Password.RequireNonAlphanumeric = false;
                 options.Password.RequiredUniqueChars = 1;
                 options.Password.RequireDigit = false;
+                options.SignIn.RequireConfirmedEmail = true;
+                options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(30);
+                options.Lockout.MaxFailedAccessAttempts = 3;
 
             });
 
+            services.ConfigureApplicationCookie(config =>
+            {
+                config.LoginPath = _config["MyLoginPath:LoginPath"];
+
+                //config.LoginPath = "/login";
+            });
+
+            services.Configure<DataProtectionTokenProviderOptions>(options =>
+            {
+                options.TokenLifespan = TimeSpan.FromHours(5);
+            });
 
 #if DEBUG
             services.AddRazorPages().AddRazorRuntimeCompilation();
@@ -63,9 +79,14 @@ namespace Lec11
             services.AddScoped<IBookRepository, BookRepository>();
             services.AddScoped<ILanguageRepository, LanguageRepository>();
             services.AddSingleton<IMessageRepository, MessageRepository>();
+            services.AddScoped<IUserClaimsPrincipalFactory<ApplicationUser>, UserClaimsFactory>();
+            services.AddScoped<IUserIdentityServices, UserIdentityServices>();
+            services.AddScoped<IEmailService, EmailService>();
             
             services.Configure<BookAlertConfigModel>("MyBook1", _config.GetSection("MyNewBook"));
             services.Configure<BookAlertConfigModel>("MyBook2", _config.GetSection("ThridBook"));
+            services.Configure<SMTPConfigModel>(_config.GetSection("SMTPMailTesting"));
+
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -99,11 +120,13 @@ namespace Lec11
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
-                
+
                 //endpoints.MapDefaultControllerRoute();
-                //endpoints.MapControllerRoute(
-                //    name: "default",
-                //    pattern: "bookApp/{controller=Home}/{action=Index}/{id?}");
+
+                endpoints.MapControllerRoute(
+                    name: "MyAareas",
+                    pattern: "{area:exists}/{controller=Home}/{action=Index}/{id?}");
+
             });
         }
     }

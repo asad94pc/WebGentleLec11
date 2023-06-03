@@ -5,10 +5,11 @@
 {
     <div class="dropdown">
         <button class="btn btn-warning dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-            Hello @User.Identity.Name
+            Hello @(User.FindFirst("UserFirstName").Value + " " + @User.FindFirst("UserLastName").Value)
         </button>
         <ul class="dropdown-menu">
             <li><a class="dropdown-item" asp-action="logout" asp-controller="Account">Logout</a></li>
+            <li><a class="dropdown-item" asp-action="ChangePassword" asp-controller="Account">Change Password</a></li>
         </ul>
     </div>
 }
@@ -18,7 +19,7 @@ else
         <a class="btn btn-info" asp-controller="Account" asp-action="Signup">SignUp</a>
     </li>
     <li class="nav-item">
-        <a class="btn btn-primary" asp-controller="Account" asp-action="Login">Login</a>
+        <a class="btn btn-primary" asp-controller="Account" asp-action="Login" asp-route-returnUrl="@Context.Request.Path">Login</a>
     </li>
 }
 

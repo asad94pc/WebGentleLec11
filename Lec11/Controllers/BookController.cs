@@ -1,5 +1,6 @@
 ﻿using Lec11.Models;
 using Lec11.Repository;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -55,6 +56,7 @@ namespace Lec11.Controllers
             return $"Book ID: {id}, Book Author: {author}";
         }
 
+        [Authorize]
         public async Task<ViewResult> AddBook(bool isSuccess = false, int bookId = 0)
         {
             var model = new BookModel();

@@ -1,9 +1,13 @@
 ﻿using Lec11.Models;
 using Lec11.Repository;
+using Lec11.Service;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
+using System.Collections.Generic;
 using System.Dynamic;
+using System.Threading.Tasks;
 
 namespace Lec11.Controllers
 {
@@ -13,11 +17,20 @@ namespace Lec11.Controllers
         private readonly BookAlertConfigModel _configuration;
         private readonly BookAlertConfigModel _configurationThirdBook;
         private readonly IMessageRepository _messageRepository;
-        public HomeController(IOptionsSnapshot<BookAlertConfigModel> configuration, IMessageRepository messageRepository)
+        private readonly IUserIdentityServices _userIdentityServices;
+        private readonly IEmailService _emailService;
+
+
+        public HomeController(IOptionsSnapshot<BookAlertConfigModel> configuration,
+            IMessageRepository messageRepository,
+            IUserIdentityServices userIdentityServices,
+            IEmailService emailService)
         {
             _configuration = configuration.Get("MyBook1");
             _configurationThirdBook = configuration.Get("MyBook2");
             _messageRepository = messageRepository;
+            _userIdentityServices = userIdentityServices;
+            _emailService = emailService;
         }
 
         [ViewData]
@@ -25,14 +38,28 @@ namespace Lec11.Controllers
         [ViewData]
         public BookModel Book { get; set; }
         [Route("~/")]
-        public ViewResult Index()
+        public async Task<ViewResult> Index()
         {
-            bool isTrue = _configuration.NewBookRelease;
-            string bookName = _configuration.NewBookName;
+            UserEmailOptions options = new UserEmailOptions()
+            {
+                ToEmails = new List<string> { "test@mail.com" },
+                PlaceHolders = new List<KeyValuePair<string, string>>()
+                {
+                    new KeyValuePair<string, string>("{{UserName}}", "Asadullah Tariq")
+                }
+            };
 
-            bool isTrue2 = _configurationThirdBook.NewBookRelease;
-            string bookName2 = _configurationThirdBook.NewBookName;
-            var value = _messageRepository.GetName();
+            await _emailService.SendTestEmail(options);
+
+            bool logInstatus = _userIdentityServices.IsAuthenticated();
+            string userIdentity = _userIdentityServices.GetUserId();
+
+            //bool isTrue = _configuration.NewBookRelease;
+            //string bookName = _configuration.NewBookName;
+
+            //bool isTrue2 = _configurationThirdBook.NewBookRelease;
+            //string bookName2 = _configurationThirdBook.NewBookName;
+            //var value = _messageRepository.GetName();
 
 
             //var bookBindModel = new BookAlertConfigModel();
@@ -65,7 +92,9 @@ namespace Lec11.Controllers
         {
             return View();
         }
+        
         [Route("~/Contact")]
+        [Authorize(Roles ="Admin")]
         public ViewResult ContactUs()
         {
             return View();
